@@ -1,111 +1,128 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh-Hans" class="js-threshold">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>UNIQorn</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/foundation.css">
+  <link rel="stylesheet" href="assets/entrance.css">
+  <link rel="stylesheet" href="assets/cursor.css">
   <style>
-    :root { --rose: #d2a1a0; }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; background: #fff; color: #fff; }
-    body { font-family: "Noto Sans SC", "PingFang SC", sans-serif; overflow: hidden; }
-    .opening {
+    /* The film is only the opening layer. It is not a player, and it leaves
+       once the real cover — lines, type, cursor — is the page. */
+    .opening-film {
       position: fixed;
       inset: 0;
+      z-index: 30;
       width: 100%;
       height: 100%;
       object-fit: cover;
       background: #fff;
       pointer-events: none;
-      z-index: 0;
     }
-    .opening::-webkit-media-controls,
-    .opening::-webkit-media-controls-enclosure,
-    .opening::-webkit-media-controls-panel,
-    .opening::-webkit-media-controls-play-button,
-    .opening::-webkit-media-controls-start-playback-button { display: none !important; opacity: 0; }
-    .cover {
-      position: relative;
-      z-index: 1;
-      min-height: 100svh;
-      opacity: 0;
-      transition: opacity 1.1s ease;
-    }
-    body.is-open .cover { opacity: 1; }
-    .place, .title, .lede, .path-zh, .path-en { text-shadow: 0 1px 18px rgba(10, 20, 40, .28); }
-    .head { position: absolute; left: 7vw; top: 42%; max-width: 16em; }
-    .place {
-      margin: 0 0 18px;
-      font-size: 11px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: rgba(215, 227, 231, .82);
-    }
-    .title {
-      margin: 0;
-      font-family: "Noto Serif SC", serif;
-      font-weight: 500;
-      font-size: clamp(30px, 4vw, 52px);
-      line-height: 1.22;
-    }
-    .lede { margin: 22px 0 0; max-width: 28ch; color: rgba(215, 227, 231, .84); }
-    .path { position: absolute; }
-    .path:nth-child(1) { left: 10vw; top: 18%; }
-    .path:nth-child(2) { left: 64vw; top: 38%; }
-    .path:nth-child(3) { left: 70vw; top: 66%; }
-    .path-zh { display: block; font-family: "Noto Serif SC", serif; font-size: clamp(20px, 2.2vw, 30px); }
-    .path-en { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(203, 216, 223, .75); }
-    a { color: inherit; text-decoration: none; }
-    a:hover .path-en { color: var(--rose); }
-    .sign {
-      position: absolute; right: 5vw; bottom: 28px; margin: 0;
-      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
-      color: rgba(203, 216, 223, .7);
-    }
-    .enter {
-      position: fixed; inset: 0; z-index: 2;
-      display: none; cursor: pointer;
-    }
-    body.needs-start .enter { display: block; }
-    @media (max-width: 800px) {
-      .head { position: relative; left: auto; top: auto; padding: 22vh 8vw 0; }
-      .path { position: relative; left: auto !important; top: auto !important; padding: 28px 8vw 0; }
-    }
+    .opening-film::-webkit-media-controls,
+    .opening-film::-webkit-media-controls-enclosure,
+    .opening-film::-webkit-media-controls-start-playback-button { display: none !important; }
+    body.film-lifted .opening-film { opacity: 0; transition: opacity 1s ease; }
   </style>
 </head>
-<body>
-  <video class="opening" src="uniqorn-opening.mp4" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
-  <main class="cover">
-    <div class="head">
-      <p class="place">吉隆坡 · 线上与线下</p>
-      <h1 class="title">透过你的情绪，<br>认识你自己</h1>
-      <p class="lede">塔罗 · 阿卡西记录 · 水晶矿石 · 工作坊</p>
+<body class="is-entrance">
+  <a class="skip-link" href="#main">跳至内容</a>
+  <header class="site-header shell">
+    <a class="wordmark" href="./">UNIQorn<span>SOUL WELLNESS</span></a>
+    <nav class="support-nav" aria-label="辅助导航">
+      <ul class="menu">
+        <li><a href="#about">关于我</a></li>
+        <li><a href="#contact">联系方式</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main" class="entrance" tabindex="-1">
+    <figure class="entrance-photo">
+      <img src="assets/img/cover-room.jpg" alt="" width="1200" height="1500">
+    </figure>
+    <svg class="entrance-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="uniqorn-stem" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity="0"/>
+          <stop offset=".18" stop-color="#D7E3E7" stop-opacity=".16"/>
+          <stop offset=".62" stop-color="#D7E3E7" stop-opacity=".38"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity=".58"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-fray" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".52"/>
+          <stop offset=".55" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-fray-left" gradientUnits="objectBoundingBox" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".52"/>
+          <stop offset=".55" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-stem" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity="0"/>
+          <stop offset=".42" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".78" stop-color="#D7E3E7" stop-opacity=".26"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-fray" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".40" stop-color="#D7E3E7" stop-opacity=".24"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-fray-left" gradientUnits="objectBoundingBox" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".40" stop-color="#D7E3E7" stop-opacity=".24"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path class="line line--a line--belly" d="M 43.50 51.50 C 39.4 50.8 36.5 48.3 33.4 44.9 C 30.1 41.2 29.3 35.3 25.7 31.1 C 22.9 27.8 18.4 27.0 15.0 25.0" vector-effect="non-scaling-stroke"/>
+      <path class="line line--a" d="M 43.50 51.50 C 39.4 50.8 36.5 48.3 33.4 44.9 C 30.1 41.2 29.3 35.3 25.7 31.1 C 22.9 27.8 18.4 27.0 15.0 25.0" vector-effect="non-scaling-stroke"/>
+      <path class="line line--b line--belly" d="M 43.50 51.50 C 43.64 51.50 44.06 51.49 44.35 51.50 C 44.63 51.51 44.93 51.53 45.22 51.55 C 45.51 51.57 45.81 51.59 46.11 51.60 C 46.40 51.61 46.70 51.62 47.00 51.62 C 47.30 51.61 47.61 51.59 47.91 51.56 C 48.21 51.52 48.51 51.47 48.81 51.40 C 49.11 51.34 49.41 51.25 49.71 51.16 C 50.00 51.07 50.30 50.96 50.59 50.85 C 50.88 50.75 51.18 50.63 51.46 50.52 C 51.75 50.42 52.04 50.31 52.32 50.22 C 52.60 50.14 52.88 50.06 53.15 50.00 C 53.43 49.94 53.70 49.89 53.96 49.87 C 54.23 49.84 54.49 49.83 54.74 49.84 C 55.00 49.85 55.25 49.88 55.49 49.91 C 55.73 49.94 55.96 49.98 56.19 50.02 C 56.42 50.07 56.64 50.12 56.84 50.15 C 57.05 50.19 57.26 50.23 57.45 50.25 C 57.64 50.27 57.82 50.28 57.99 50.27 C 58.16 50.27 58.32 50.25 58.47 50.23 C 58.61 50.20 58.81 50.13 58.88 50.11" vector-effect="non-scaling-stroke"/>
+      <path class="line line--b" d="M 43.50 51.50 C 43.64 51.50 44.06 51.49 44.35 51.50 C 44.63 51.51 44.93 51.53 45.22 51.55 C 45.51 51.57 45.81 51.59 46.11 51.60 C 46.40 51.61 46.70 51.62 47.00 51.62 C 47.30 51.61 47.61 51.59 47.91 51.56 C 48.21 51.52 48.51 51.47 48.81 51.40 C 49.11 51.34 49.41 51.25 49.71 51.16 C 50.00 51.07 50.30 50.96 50.59 50.85 C 50.88 50.75 51.18 50.63 51.46 50.52 C 51.75 50.42 52.04 50.31 52.32 50.22 C 52.60 50.14 52.88 50.06 53.15 50.00 C 53.43 49.94 53.70 49.89 53.96 49.87 C 54.23 49.84 54.49 49.83 54.74 49.84 C 55.00 49.85 55.25 49.88 55.49 49.91 C 55.73 49.94 55.96 49.98 56.19 50.02 C 56.42 50.07 56.64 50.12 56.84 50.15 C 57.05 50.19 57.26 50.23 57.45 50.25 C 57.64 50.27 57.82 50.28 57.99 50.27 C 58.16 50.27 58.32 50.25 58.47 50.23 C 58.61 50.20 58.81 50.13 58.88 50.11" vector-effect="non-scaling-stroke"/>
+      <path class="line line--c line--belly" d="M 43.50 51.50 C 43.64 51.56 44.04 51.72 44.35 51.83 C 44.65 51.94 44.97 52.05 45.32 52.15 C 45.66 52.25 46.02 52.33 46.40 52.41 C 46.78 52.48 47.18 52.54 47.59 52.59 C 48.01 52.65 48.44 52.69 48.88 52.74 C 49.32 52.79 49.77 52.84 50.23 52.92 C 50.69 52.99 51.16 53.07 51.63 53.20 C 52.10 53.32 52.58 53.47 53.05 53.65 C 53.53 53.84 54.00 54.07 54.47 54.33 C 54.94 54.59 55.41 54.89 55.87 55.21 C 56.34 55.53 56.79 55.88 57.24 56.24 C 57.69 56.60 58.14 56.99 58.58 57.35 C 59.02 57.72 59.45 58.10 59.88 58.45 C 60.30 58.80 60.72 59.14 61.13 59.46 C 61.55 59.77 61.95 60.07 62.35 60.34 C 62.75 60.61 63.14 60.86 63.52 61.10 C 63.89 61.33 64.26 61.55 64.61 61.78 C 64.96 62.00 65.30 62.21 65.62 62.45 C 65.93 62.68 66.23 62.92 66.49 63.19 C 66.76 63.45 67.09 63.89 67.21 64.03" vector-effect="non-scaling-stroke"/>
+      <path class="line line--c" d="M 43.50 51.50 C 43.64 51.56 44.04 51.72 44.35 51.83 C 44.65 51.94 44.97 52.05 45.32 52.15 C 45.66 52.25 46.02 52.33 46.40 52.41 C 46.78 52.48 47.18 52.54 47.59 52.59 C 48.01 52.65 48.44 52.69 48.88 52.74 C 49.32 52.79 49.77 52.84 50.23 52.92 C 50.69 52.99 51.16 53.07 51.63 53.20 C 52.10 53.32 52.58 53.47 53.05 53.65 C 53.53 53.84 54.00 54.07 54.47 54.33 C 54.94 54.59 55.41 54.89 55.87 55.21 C 56.34 55.53 56.79 55.88 57.24 56.24 C 57.69 56.60 58.14 56.99 58.58 57.35 C 59.02 57.72 59.45 58.10 59.88 58.45 C 60.30 58.80 60.72 59.14 61.13 59.46 C 61.55 59.77 61.95 60.07 62.35 60.34 C 62.75 60.61 63.14 60.86 63.52 61.10 C 63.89 61.33 64.26 61.55 64.61 61.78 C 64.96 62.00 65.30 62.21 65.62 62.45 C 65.93 62.68 66.23 62.92 66.49 63.19 C 66.76 63.45 67.09 63.89 67.21 64.03" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <span class="entrance-anchor" aria-hidden="true"></span>
+    <div class="entrance-inner shell">
+      <div class="entrance-head">
+        <p class="entrance-place">吉隆坡 · 线上与线下</p>
+        <h1 class="entrance-title">透过你的情绪，<br>认识你自己</h1>
+        <p class="entrance-lede">塔罗 · 阿卡西记录 · 水晶矿石 · 工作坊</p>
+      </div>
+      <nav class="entrance-paths" aria-label="选择业务空间">
+        <div class="path" data-path="1">
+          <a class="path-link" data-entrance data-cursor data-cursor-cue="进入" data-cursor-en="Enter" href="#tarot">
+            <span class="path-zh">塔罗 & 阿卡西记录</span>
+            <span class="path-en" lang="en">Tarot & Akashic</span>
+          </a>
+        </div>
+        <div class="path" data-path="2">
+          <a class="path-link" data-entrance data-cursor data-cursor-cue="进入" data-cursor-en="Enter" href="#workshops">
+            <span class="path-zh">课程 & 工作坊</span>
+            <span class="path-en" lang="en">Courses & Workshops</span>
+          </a>
+        </div>
+        <div class="path" data-path="3">
+          <a class="path-link" data-entrance data-cursor data-cursor-cue="进入" data-cursor-en="Enter" href="#crystals">
+            <span class="path-zh">水晶矿石</span>
+            <span class="path-en" lang="en">Crystals & Minerals</span>
+          </a>
+        </div>
+      </nav>
     </div>
-    <a class="path" href="#tarot"><span class="path-zh">塔罗 & 阿卡西记录</span><span class="path-en">Tarot & Akashic</span></a>
-    <a class="path" href="#workshops"><span class="path-zh">课程 & 工作坊</span><span class="path-en">Courses & Workshops</span></a>
-    <a class="path" href="#crystals"><span class="path-zh">水晶矿石</span><span class="path-en">Crystals</span></a>
-    <p class="sign">UNIQorn Soul Wellness</p>
+    <p class="entrance-sign" aria-hidden="true">UNIQorn Soul Wellness</p>
   </main>
-  <div class="enter" hidden></div>
+  <div class="white-transition" aria-hidden="true"></div>
+  <video class="opening-film" src="uniqorn-opening.mp4" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+  <script src="assets/cursor.js"></script>
+  <script src="assets/entrance.js"></script>
   <script>
-    const film = document.querySelector(".opening");
-    const open = () => document.body.classList.add("is-open");
-    film.addEventListener("timeupdate", () => {
-      if (film.currentTime > 7.15) open();
-    });
-    film.addEventListener("ended", () => { film.pause(); open(); });
-    const start = () => film.play().then(() => {
-      document.body.classList.remove("needs-start");
-    }).catch(() => {
-      document.body.classList.add("needs-start");
-    });
-    start();
-    document.body.addEventListener("pointerdown", () => {
-      if (document.body.classList.contains("needs-start")) start();
-    });
+    const film = document.querySelector(".opening-film");
+    const lift = () => document.body.classList.add("film-lifted");
+    film.addEventListener("timeupdate", () => { if (film.currentTime > 7.4) lift(); });
+    film.addEventListener("ended", () => { film.pause(); lift(); });
+    film.play().catch(() => {});
   </script>
 </body>
 </html>

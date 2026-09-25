@@ -1,0 +1,271 @@
+/*
+ * Cursor dot — companion to the OS cursor.
+ *
+ * The dot rides alongside the system pointer. It is not a replacement. The
+ * OS cursor is never hidden, so:
+ *
+ *   - keyboard users have a focus ring they can see
+ *   - assistive tech that reads cursor:none is unaffected
+ *   - touch input has no overlay under a non-existent pointer (we also
+ *     skip the JS entirely on coarse pointers, see cursor.js)
+ *
+ * When the visitor hovers anything marked [data-cursor], the dot grows
+ * and shows the label written in [data-cursor-label].
+ */
+
+:root {
+  /*
+   * At rest the dot is the rose anchor — the point in the heart, carried
+   * around by the visitor. On a hover target it opens into indigo: the
+   * colour that leads, which is what an entrance is. Red finds, indigo
+   * takes you in.
+   */
+  --cursor-size: 8px;
+  --cursor-size-hover: 64px;
+  --cursor-color: var(--anchor-red, #C58B8E);
+  --cursor-color-hover: var(--indigo);
+  --cursor-label-color: var(--paper, #FFFFFF);
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--cursor-size);
+  height: var(--cursor-size);
+  border-radius: 999px;
+  background: var(--cursor-color);
+  pointer-events: none;
+  z-index: 9999;
+
+  /*
+   * The size the pill opens to, set per hover target in cursor.js. The header
+   * and the two side edges are thin targets — a 64px pill beside them would
+   * shout over the whole page — so they ask for a smaller step.
+   */
+  --pill-h: var(--cursor-size-hover);
+  --pill-pad: 22px;
+
+  /*
+   * Position is driven by JS via `transform: translate3d(x, y, 0)` so the
+   * dot's TOP-LEFT lands at the OS cursor's hotspot. The separate `translate`
+   * property carries the centring offset, expressed as a percentage of the
+   * dot's own box so it stays centred while the box is resized:
+   *   rest  → -50% -50% centres the 8px dot under the cursor
+   *   hover → -50% -50% centres the pill on the cursor as well
+   * The `translate` property transitions independently and does not fight
+   * the per-frame transform update from JS.
+   */
+  /*
+   * The rim is always present, just transparent at rest, so opening the pill
+   * is a colour change rather than a border arriving — a 2px ring popping
+   * into existence under the pointer reads as a glitch, not as the dot
+   * opening. box-sizing is border-box so the 64px height is the pill, not
+   * the pill plus its rim.
+   */
+  box-sizing: border-box;
+  border: 2px solid transparent;
+
+  translate: -50% -50%;
+  transition:
+    width 0.28s var(--ease-standard, ease-out),
+    height 0.28s var(--ease-standard, ease-out),
+    min-width 0.28s var(--ease-standard, ease-out),
+    padding 0.28s var(--ease-standard, ease-out),
+    background-color 0.28s var(--ease-standard, ease-out),
+    border-color 0.28s var(--ease-standard, ease-out),
+    translate 0.28s var(--ease-standard, ease-out);
+
+  /*
+   * The label sits inside the dot, hidden until hover. The dot has
+   * overflow:hidden so the text only appears when the dot is large enough
+   * to hold it.
+   */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /*
+   * No text selection on the label. The dot is a passive UI layer; clicking
+   * through it must not select adjacent text on the page underneath.
+   */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/*
+ * The wash.
+ *
+ * A pill filled flat indigo is a button. A pill of indigo thinning to nothing
+ * at two different centres is pigment on wet paper: where the two passes meet
+ * the colour is deepest, and towards the rim it has run out of paint and the
+ * paper shows through.
+ *
+ * It lives on a pseudo-element so it can fade in — a gradient itself cannot
+ * be interpolated, so swapping `background-image` on hover would snap. The
+ * flat colour underneath fades out while this fades in.
+ */
+.cursor-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image:
+    /*
+     * Radii are deliberately smaller than the pill. A gradient whose
+     * transparent stop falls outside the box is just a flat fill — which is
+     * what the first attempt was, measured at ~100% indigo edge to edge.
+     * The wide pass sets the falloff, the tight one deepens the middle only
+     * and is already spent by the time it reaches the rim.
+     */
+    radial-gradient(66% 78% at 46% 46%, var(--indigo) 0%, transparent 100%),
+    radial-gradient(34% 40% at 52% 54%, var(--indigo-deep) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.28s var(--ease-standard, ease-out);
+}
+
+/*
+ * The cue is two lines: what to do in Chinese over the same thing in English.
+ * The Chinese line carries the meaning, the English carries the tone — small,
+ * tracked out, quieter, the way a subtitle is quieter than a title.
+ */
+.cursor-dot__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  /* Above the wash pseudo-element, which is absolutely positioned and would
+     otherwise paint over the text. */
+  position: relative;
+  z-index: 1;
+  color: var(--cursor-label-color);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.24s var(--ease-standard, ease-out),
+              transform 0.24s var(--ease-standard, ease-out);
+}
+
+.cursor-dot__cue {
+  font-family: var(--font-display, 'Noto Serif SC', serif);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+.cursor-dot__en {
+  font-family: 'Jost', -apple-system, sans-serif;
+  font-size: 0.5rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/*
+ * Hover state. The class lives on documentElement so the dot reads from
+ * one source of truth and CSS does not need to coordinate with JS more
+ * than toggling a single attribute.
+ *
+ * The dot opens into a pill: 64px tall, its width carried by the label so
+ * a long name ("Courses & Workshops") still fits on one line. It stays
+ * centred on the hotspot, so the pointer is still the exact thing being
+ * clicked, and the pill covers the name it is naming. That covering is
+ * the whole point: the name is re-written inside the pill, so hiding the
+ * original underneath costs nothing.
+ */
+/*
+ * Two smaller steps. `--pill-h` is all the hover rule reads, so a target only
+ * has to name its step and height, minimum width and both type sizes follow.
+ */
+.cursor-dot[data-size="mid"] {
+  --pill-h: 50px;
+  --pill-pad: 18px;
+}
+.cursor-dot[data-size="mid"] .cursor-dot__cue { font-size: 0.75rem; }
+.cursor-dot[data-size="mid"] .cursor-dot__en  { font-size: 0.4375rem; }
+
+.cursor-dot[data-size="small"] {
+  --pill-h: 36px;
+  --pill-pad: 14px;
+}
+.cursor-dot[data-size="small"] .cursor-dot__cue { font-size: 0.6875rem; }
+.cursor-dot[data-size="small"] .cursor-dot__en  { font-size: 0.4375rem; }
+.cursor-dot[data-size="small"] .cursor-dot__label { gap: 2px; }
+
+html[data-cursor="hover"] .cursor-dot {
+  width: auto;
+  min-width: var(--pill-h);
+  height: var(--pill-h);
+  padding-inline: var(--pill-pad);
+
+  /*
+   * The flat fill empties out. Premultiplied interpolation means the rose
+   * fades on its own hue rather than through grey, and what is left behind
+   * is the wash above — indigo thinning to nothing.
+   */
+  background-color: transparent;
+  border-color: var(--cursor-color);
+  translate: -50% -50%;
+}
+
+html[data-cursor="hover"] .cursor-dot::before {
+  opacity: 1;
+}
+
+html[data-cursor="hover"] .cursor-dot__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/*
+ * Typing: drop back to indigo and shrink to 6px, parked under the caret.
+ * Rose is the anchor and an anchor has no business sitting in a text field;
+ * indigo is the working colour. The caret already blinks; the dot should
+ * not blink with it.
+ */
+.cursor-dot[data-state="text"] {
+  width: 6px;
+  height: 6px;
+  background: var(--indigo);
+}
+
+/*
+ * Reduced-motion: no transitions, dot is always exactly where the cursor
+ * is. JS already skipped rAF easing under reduced motion by setting a body
+ * class; CSS short-circuits the hover transitions for completeness.
+ */
+body.is-cursor-reduced .cursor-dot,
+body.is-cursor-reduced .cursor-dot__label {
+  transition: none;
+}
+
+/*
+ * Once the dot exists the OS cursor is redundant, and a 64px pill with an
+ * arrow poking out of it reads as two pointers arguing.
+ *
+ * Guarded by `.has-cursor`, which cursor.js sets only after it has built the
+ * node — a visitor with JavaScript off keeps the real cursor and never ends
+ * up with neither. Keyboard users are untouched: they never reach for the
+ * pointer, and focus rings are a separate mechanism entirely.
+ */
+html.has-cursor,
+html.has-cursor * {
+  cursor: none;
+}
+
+/*
+ * Touch / coarse pointer: the JS does not run. The CSS class below is
+ * defensive — if the JS ever ships its DOM before early-returning, hide
+ * the orphan node rather than let it sit on screen at (0,0).
+ */
+@media (pointer: coarse) {
+  .cursor-dot {
+    display: none;
+  }
+}
