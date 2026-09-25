@@ -3,13 +3,109 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>UNIQorn 开场短片</title>
+  <title>UNIQorn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Serif+SC:wght@500;600&display=swap" rel="stylesheet">
   <style>
-    html, body { margin: 0; height: 100%; background: #142a48; }
-    video { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+    :root { --rose: #d2a1a0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #fff; color: #fff; }
+    body { font-family: "Noto Sans SC", "PingFang SC", sans-serif; overflow: hidden; }
+    .opening {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #fff;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .opening::-webkit-media-controls,
+    .opening::-webkit-media-controls-enclosure,
+    .opening::-webkit-media-controls-panel,
+    .opening::-webkit-media-controls-play-button,
+    .opening::-webkit-media-controls-start-playback-button { display: none !important; opacity: 0; }
+    .cover {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+    }
+    body.is-open .cover { opacity: 1; }
+    .place, .title, .lede, .path-zh, .path-en { text-shadow: 0 1px 18px rgba(10, 20, 40, .28); }
+    .head { position: absolute; left: 7vw; top: 42%; max-width: 16em; }
+    .place {
+      margin: 0 0 18px;
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(215, 227, 231, .82);
+    }
+    .title {
+      margin: 0;
+      font-family: "Noto Serif SC", serif;
+      font-weight: 500;
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.22;
+    }
+    .lede { margin: 22px 0 0; max-width: 28ch; color: rgba(215, 227, 231, .84); }
+    .path { position: absolute; }
+    .path:nth-child(1) { left: 10vw; top: 18%; }
+    .path:nth-child(2) { left: 64vw; top: 38%; }
+    .path:nth-child(3) { left: 70vw; top: 66%; }
+    .path-zh { display: block; font-family: "Noto Serif SC", serif; font-size: clamp(20px, 2.2vw, 30px); }
+    .path-en { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: rgba(203, 216, 223, .75); }
+    a { color: inherit; text-decoration: none; }
+    a:hover .path-en { color: var(--rose); }
+    .sign {
+      position: absolute; right: 5vw; bottom: 28px; margin: 0;
+      font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(203, 216, 223, .7);
+    }
+    .enter {
+      position: fixed; inset: 0; z-index: 2;
+      display: none; cursor: pointer;
+    }
+    body.needs-start .enter { display: block; }
+    @media (max-width: 800px) {
+      .head { position: relative; left: auto; top: auto; padding: 22vh 8vw 0; }
+      .path { position: relative; left: auto !important; top: auto !important; padding: 28px 8vw 0; }
+    }
   </style>
 </head>
 <body>
-  <video src="uniqorn-opening.mp4" controls autoplay muted playsinline></video>
+  <video class="opening" src="uniqorn-opening.mp4" autoplay muted playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+  <main class="cover">
+    <div class="head">
+      <p class="place">吉隆坡 · 线上与线下</p>
+      <h1 class="title">透过你的情绪，<br>认识你自己</h1>
+      <p class="lede">塔罗 · 阿卡西记录 · 水晶矿石 · 工作坊</p>
+    </div>
+    <a class="path" href="#tarot"><span class="path-zh">塔罗 & 阿卡西记录</span><span class="path-en">Tarot & Akashic</span></a>
+    <a class="path" href="#workshops"><span class="path-zh">课程 & 工作坊</span><span class="path-en">Courses & Workshops</span></a>
+    <a class="path" href="#crystals"><span class="path-zh">水晶矿石</span><span class="path-en">Crystals</span></a>
+    <p class="sign">UNIQorn Soul Wellness</p>
+  </main>
+  <div class="enter" hidden></div>
+  <script>
+    const film = document.querySelector(".opening");
+    const open = () => document.body.classList.add("is-open");
+    film.addEventListener("timeupdate", () => {
+      if (film.currentTime > 7.15) open();
+    });
+    film.addEventListener("ended", () => { film.pause(); open(); });
+    const start = () => film.play().then(() => {
+      document.body.classList.remove("needs-start");
+    }).catch(() => {
+      document.body.classList.add("needs-start");
+    });
+    start();
+    document.body.addEventListener("pointerdown", () => {
+      if (document.body.classList.contains("needs-start")) start();
+    });
+  </script>
 </body>
 </html>
