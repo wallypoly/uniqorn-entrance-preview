@@ -1,0 +1,742 @@
+/* ============================================================
+   UNIQorn — entrance.css (homepage only)
+
+   Composition: the unicorn's star settles into the red anchor, then three
+   strands open toward the entrances, one left and two right.
+
+     line   = the path of self-discovery
+     mist   = what is not yet clear
+     anchor = the point in the heart
+
+   The line is drawn, not plotted. The paths share the red point as their
+   origin and are seated on the three entrance names by entrance.js.
+
+   The anchor is the Rose Anchor #C58B8E — the point in the heart (design guide
+   v4, "Human anchors"). Graphic only: one per screen, never body text.
+
+   The token itself lives in foundation.css. It is not re-declared here.
+   ============================================================ */
+
+:root {
+  /* Alias of --rose-soft (foundation.css). Cover hover label only. Measured
+     5.23:1 on the indigo field; the previous #E06450 was 3.32:1 and failed. */
+  --anchor-red-lift: var(--rose-soft);
+}
+
+/*
+ * The homepage has no footer, so the cover can be painted once at viewport
+ * level and run edge to edge. Painting it on body keeps the header inside the
+ * watercolour instead of on a flat band of its own — no seam across the top.
+ */
+body.is-entrance { background: none; color: var(--white); }
+
+body.is-entrance::before {
+  content: "";
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  background:
+    /*
+     * Scattered pigment, on top of the washes below it. Generated, not drawn
+     * with radial-gradients: CSS can only make a circle, and a "denser rim" on
+     * a circle is a ring, which reads as bokeh. See assets/img/pigment.png.
+     *
+     * It carries its own quiet field — a soft multiplier that drops to 0.40
+     * across the headline block and the entrance column — because pigment
+     * behind the small print lifts the background and eats the text contrast.
+     */
+    url("img/pigment.png") center / cover no-repeat,
+    /* the main field */
+    radial-gradient(82% 60% at 17% 27%, rgba(175, 196, 211, .26) 0%, rgba(175, 196, 211, 0) 58%),
+    radial-gradient(68% 56% at 85% 75%, rgba(157, 123, 196, .16) 0%, rgba(157, 123, 196, 0) 62%),
+    radial-gradient(56% 44% at 63% 5%,  rgba(39, 75, 114, .55) 0%, rgba(39, 75, 114, 0) 72%),
+    radial-gradient(130% 88% at 50% 124%, rgba(20, 42, 72, .95) 0%, rgba(20, 42, 72, 0) 62%),
+    linear-gradient(164deg, #1E3A5F 0%, #1B2E4C 48%, #19213D 100%);
+  animation: field-drift 38s var(--ease-standard) infinite alternate;
+  pointer-events: none;
+}
+@keyframes field-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(-1.5%, 1.1%, 0) scale(1.045); }
+}
+
+/* paper grain — keeps the field from reading as a UI gradient */
+body.is-entrance::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: .085;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.is-entrance .wordmark { color: var(--white); }
+.is-entrance .wordmark span { color: rgba(203, 216, 223, .88); }
+.is-entrance .menu a { color: rgba(215, 227, 231, .84); }
+.is-entrance .menu a:hover { color: var(--white); }
+.is-entrance .skip-link { background: var(--white); color: var(--indigo); }
+
+.entrance {
+  position: relative;
+  min-height: calc(100vh - 96px);
+  min-height: calc(100svh - 96px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ---------- the photograph: a real room, dissolved into the field ---------- */
+
+/*
+ * Without this the cover is all atmosphere and no temperature. It sits as a
+ * block in the lower-left and is soft-masked on every side so it emerges from
+ * the mist instead of being pasted on it.
+ */
+.entrance-photo {
+  position: absolute;
+  left: 3%;
+  top: 68%;
+  width: 30%;
+  height: 42%;
+  z-index: 1;
+  margin: 0;
+  opacity: .80;
+  pointer-events: none;
+  /*
+   * The dissolve is a generated field, not a stack of gradients.
+   *
+   * The version before this one multiplied a radial by two linear fades, and
+   * every edge of the box measured 0.000 — and the photograph still read as a
+   * rounded rectangle. Those are two different claims. What the eye picks up
+   * is not a level but a *kink*: each gradient stop is a discontinuity in the
+   * slope of the falloff, and a linear fade contributes iso-alpha contours
+   * that are straight lines. Reproducing that field exactly (tools/photo-mask.py
+   * evaluates it) gives a maximum slope discontinuity of 0.0121 /px^2, and a
+   * straight contour 36px long.
+   *
+   * `assets/img/photo-dissolve.png` is that field replaced by a smooth one:
+   * an ellipse inscribed in the box with a low-frequency wobble on its
+   * silhouette, faded from the inside out. Measured on the same ruler —
+   * 0.0005 /px^2, longest straight contour 17px, and alpha exactly 0 in the
+   * outer 1% of the box at any resolution.
+   *
+   * Generated, not hand-drawn: re-run `python3 tools/photo-mask.py --write`
+   * rather than editing the PNG, and use `--sheet` to compare candidates over
+   * real captured frames.
+   */
+  mask-image: url("img/photo-dissolve.png");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: url("img/photo-dissolve.png");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+}
+.entrance-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 42% 42%;
+}
+
+/* ---------- the line ---------- */
+
+.entrance-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /*
+   * `--line-len` is set by entrance.js from the measured screen length of each
+   * path. `pathLength="100"` cannot be used for this: with a non-scaling
+   * stroke the browser resolves the dash pattern in screen pixels and ignores
+   * the normalised length, so `stroke-dasharray: 100` became "100px on, 100px
+   * off" — which is what turned the line into a dashed cable.
+   *
+   * Without JS the custom property is absent, the dash is `none` and the line
+   * is simply solid. Never dashed.
+   */
+  stroke-dasharray: var(--line-len, none);
+  stroke-dashoffset: var(--line-len, 0);
+}
+.line--stem { stroke: url(#uniqorn-stem); }
+.line--a { stroke: url(#uniqorn-fray-left); }
+.line--b, .line--c { stroke: url(#uniqorn-fray); }
+
+/*
+ * The belly: a wider stroke under the hairline, painted first. Its gradient
+ * peaks in the middle of the path and falls to nothing at both ends, so the
+ * line gains weight where it travels and thins where it dissolves. A constant
+ * stroke width is what makes a line read as a printed trace.
+ */
+.line--belly { stroke-width: 2.3; }
+.line--stem.line--belly { stroke: url(#uniqorn-belly-stem); }
+.line--a.line--belly { stroke: url(#uniqorn-belly-fray-left); }
+.line--b.line--belly,
+.line--c.line--belly { stroke: url(#uniqorn-belly-fray); }
+
+/*
+ * Narrative, not decoration — and the narrative changed.
+ *
+ * The old version staggered the three strands at 1.8s / 2.1s / 2.4s: walk,
+ * arrive, then one choice, then the next, then the next. Wallance asked for
+ * the opposite reading: "从一个心中之点（红点）直接点开三个入口。一开始就点开
+ * 三个入口的感觉." The point in the heart is not a stop on the way to the
+ * entrances; it is where they come from. So the three leave together, in one
+ * gesture, and they begin while the dot is still settling into place rather
+ * than after it has finished.
+ *
+ * The threshold seats the painting's star on this point. The three strands
+ * begin after that point has turned red and the cover is visible.
+ *
+ * Every animation hangs off `.is-live`, which entrance.js adds only after it
+ * has measured the paths and only when motion is welcome. If the script never
+ * runs, or the visitor has asked for reduced motion, the composition is simply
+ * already complete — drawn, not mid-draw.
+ */
+.entrance.is-live .line--a,
+.entrance.is-live .line--b,
+.entrance.is-live .line--c { animation: line-draw .85s var(--ease-flow) .5s forwards; }
+@keyframes line-draw { to { stroke-dashoffset: 0; } }
+
+/* ---------- the anchor ---------- */
+
+/*
+ * Placed at 43.5% / 51.5%: the first point every strand shares. The painting's
+ * star is seated here, then the three directions leave from this point.
+ */
+.entrance-anchor {
+  position: absolute;
+  left: 43.5%;
+  top: 51.5%;
+  z-index: 2;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--anchor-red);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .32),
+    0 0 18px 4px rgba(197, 139, 142, .46),
+    0 0 48px 18px rgba(197, 139, 142, .20);
+  transform: translate(-50%, -50%) scale(1);
+}
+.entrance.is-live .entrance-anchor {
+  transform: translate(-50%, -50%) scale(.2);
+  /* Lands at 0.70s, but the three strands leave at 0.50s — the point is still
+     opening outward when they do, so the directions read as coming out of it
+     rather than waiting for it to settle. */
+  animation: anchor-in .4s var(--ease-flow) .3s forwards;
+}
+@keyframes anchor-in {
+  to { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ---------- content ---------- */
+
+.entrance-inner {
+  position: relative;
+  z-index: 3;
+  min-height: calc(100vh - 96px);
+  min-height: calc(100svh - 96px);
+}
+
+.entrance-head {
+  position: absolute;
+  left: 5%;
+  top: 46%;
+  max-width: min(35vw, 450px);
+}
+
+.entrance-place {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: rgba(203, 216, 223, .78);
+}
+.entrance-title {
+  font-size: clamp(30px, 4.2vw, 54px);
+  line-height: 1.2;
+  color: var(--white);
+}
+.entrance-lede {
+  margin: var(--space-8) 0 0;
+  max-width: 34ch;
+  font-size: var(--text-md);
+  color: rgba(215, 227, 231, .82);
+}
+
+.entrance-paths { position: absolute; inset: 0; pointer-events: none; }
+
+/* The first entrance sits left of the star; the other two balance it right. */
+.path { position: absolute; display: block; pointer-events: auto; }
+.path:nth-child(1) { left: 11%; top: 21%; }
+.path:nth-child(2) { left: 66%; top: 40%; }
+.path:nth-child(3) { left: 72%; top: 69%; }
+
+.path-link { display: inline-flex; flex-direction: column; gap: var(--space-2); }
+.path-zh {
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.3vw, 31px);
+  line-height: 1.2;
+  color: var(--white);
+  transition: color var(--motion-base) var(--ease-standard);
+}
+.path-en {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: rgba(203, 216, 223, .72);
+}
+.path-status { font-size: var(--text-sm); color: rgba(203, 216, 223, .72); }
+
+/* hover / focus: the mist opens, the matching strand answers */
+.entrance-paths:hover .path-link:not(:hover) .path-zh { color: rgba(255, 255, 255, .48); }
+.path-link:hover .path-zh { color: var(--white); }
+.path-link:hover .path-en { color: var(--anchor-red-lift); }
+.path-link:focus-visible .path-zh { color: var(--white); }
+
+/* the strands are gradient-stroked, so they answer by weight, not by colour */
+.entrance[data-focus] .line--a,
+.entrance[data-focus] .line--b,
+.entrance[data-focus] .line--c { stroke-opacity: .28; }
+.entrance[data-focus="1"] .line--a,
+.entrance[data-focus="2"] .line--b,
+.entrance[data-focus="3"] .line--c { stroke-opacity: 1; stroke-width: 1.9; }
+.entrance[data-focus] .line--stem { stroke-opacity: .8; }
+
+.entrance-sign {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--space-6);
+  z-index: 3;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: rgba(203, 216, 223, .70);
+}
+
+/* ---------- click-to-white transition ---------- */
+
+/* The cover dissolves; it is not wiped. A geometric circle reads as a reveal.
+   A wash has to arrive the way ink does — uneven edge, pigment settling at the
+   rim, and something to look at in the middle, because when it fills the
+   screen what shows is its centre. `ink-bloom.webp` is baked with all of that:
+   wet edge, 170 blurred ellipses for the torn rim, paper mottle and dilute
+   blue streaks carried through the white. Only transform and opacity animate,
+   so the whole thing stays on the compositor. */
+.white-transition {
+  position: fixed;
+  z-index: 90;
+  left: var(--origin-x, 50%);
+  top: var(--origin-y, 50%);
+  width: 190vmax;
+  height: 190vmax;
+  margin: -95vmax 0 0 -95vmax;
+  background: url("img/ink-bloom.webp") center / 100% 100% no-repeat;
+  transform: scale(.02);
+  opacity: 0;
+  pointer-events: none;
+  /* no transition at rest, on purpose: when `.is-leaving` comes off the layer
+     must snap back invisible rather than animate shrinking away */
+  transition: none;
+}
+body.is-leaving .white-transition {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    transform 1500ms cubic-bezier(.3, 0, .22, 1),
+    opacity 420ms var(--ease-flow);
+}
+body.is-leaving .entrance-inner {
+  opacity: .5;
+  transition: opacity var(--motion-slow) var(--ease-standard);
+}
+
+/* ---------- responsive ---------- */
+
+/*
+ * Stacked layout.
+ *
+ * The delta is a horizontal figure — one line arriving, three leaving to the
+ * right. In a single column there is no "to the right", so the strands ran
+ * straight through the entrance list and the anchor landed on the lede. Rather
+ * than squeeze the figure, the mobile composition says the same thing
+ * vertically: a point of light, and a short line falling out of it into the
+ * page. The three entrances below are already a list; they do not need to be
+ * pointed at.
+ */
+@media (max-width: 1000px) {
+  .entrance-inner { display: grid; grid-template-columns: 1fr; gap: clamp(44px, 7vh, 76px); align-content: center; padding-block: 88px 84px; }
+  .entrance-head { position: relative; left: auto; top: auto; max-width: none; }
+  .entrance-lines { display: none; }
+
+  /*
+   * Below 900px the SVG strands are switched off, so nothing pointed at the
+   * three entrances any more. On a phone they stopped reading as three ways
+   * out and started reading as three more lines of the lede: same kind of
+   * type, same colour, no edge, and hover is the only response the stylesheet
+   * ever gave them — which a touch screen never fires.
+   *
+   * So the point comes back and the line drops out of it, rotated 90 degrees
+   * from the desktop fan. The three entrances sit along it.
+   *
+   * No spurs and no numbers. Three rules reaching out to three labels turned
+   * this into a diagram; 01/02/03 turned it into a list. It is meant to read
+   * as a thread that happens to pass three doors, so the drop is the only
+   * mark, and the names carry themselves.
+   *
+   * The stroke is a bitmap of a generated path, not a border. A ruled 1px line
+   * is a printed trace; this carries the same low-frequency drift and the same
+   * weight variation as the desktop strands, for the same reason. The geometry
+   * is produced by tools/entrance-mobile-fork.py — do not hand-edit the data
+   * URI below, re-run the script.
+   *
+   * The dot moves here from its desktop seat (43.5% / 51.5%) because up there
+   * it had nothing left to land on — the stem below it pointed at the title.
+   * `.entrance-anchor` is switched off, so the dot drawn on `.entrance-paths`
+   * is still the only red point on the screen.
+   */
+  .entrance-anchor { display: none; }
+
+  .entrance-paths {
+    --spine-x: clamp(74px, 20.5vw, 92px); /* leaves room for the whole painting */
+    --name-gap: 15px;  /* air between the stroke and the names */
+    --dot-size: 12px;
+    --dot-lead: 32px;  /* dot plus the air under it, before the first row */
+    --line-half: 12px; /* half the first line box: where the drop levels out */
+    --line-w: 11px;    /* room the stroke's drift needs; the line runs down its middle */
+    --row-h: 52px;     /* row pitch, so the stroke knows where the last entrance sits */
+
+    position: relative;
+    inset: auto;
+    display: grid;
+    gap: var(--path-gap);
+    padding-left: calc(var(--spine-x) + var(--name-gap));
+    padding-top: var(--dot-lead);
+    pointer-events: auto;
+  }
+
+  /* the point the line drops out of — the same dot as .entrance-anchor */
+  .entrance-paths::before {
+    content: "";
+    position: absolute;
+    left: var(--spine-x);
+    top: 0;
+    width: var(--dot-size);
+    height: var(--dot-size);
+    margin-left: calc(var(--dot-size) / -2);
+    border-radius: 50%;
+    background: var(--anchor-red);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, .32),
+      0 0 18px 4px rgba(197, 139, 142, .46),
+      0 0 48px 18px rgba(197, 139, 142, .20);
+  }
+
+  /* The staircase goes. It was a horizontal fan of three when there was width
+     for one; stacked, it read as decoration. Level rows say what is actually
+     true — the three entrances are peers. */
+  .path,
+  .path:nth-child(1),
+  .path:nth-child(2),
+  .path:nth-child(3) {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin-inline-start: 0;
+    min-height: var(--row-h);
+  }
+
+  /* Numbering is gone everywhere now, not just here — see the note on `.path`
+     in the desktop block. There is nothing left to switch off. */
+
+  /* One stroke for the whole drop, not one per row: split into segments the
+     weight would swell and pinch at every join. It stops level with the last
+     name — `--row-h` minus half a line is exactly where that row's first line
+     sits, and it does not depend on the gap. */
+  .entrance-paths::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--spine-x) - var(--line-w) / 2);
+    top: var(--dot-size);
+    bottom: calc(var(--row-h) - var(--line-half));
+    width: var(--line-w);
+    background-image: var(--fork-spine);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  /* >>> generated by tools/entrance-mobile-fork.py */
+  .entrance-paths {
+    --fork-spine: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 2000' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='h' gradientUnits='objectBoundingBox' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0.00' stop-color='%23D7E3E7' stop-opacity='0.00'/%3E%3Cstop offset='0.14' stop-color='%23D7E3E7' stop-opacity='0.30'/%3E%3Cstop offset='0.55' stop-color='%23D7E3E7' stop-opacity='0.50'/%3E%3Cstop offset='1.00' stop-color='%23D7E3E7' stop-opacity='0.46'/%3E%3C/linearGradient%3E%3ClinearGradient id='b' gradientUnits='objectBoundingBox' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0.00' stop-color='%23D7E3E7' stop-opacity='0.00'/%3E%3Cstop offset='0.42' stop-color='%23D7E3E7' stop-opacity='0.34'/%3E%3Cstop offset='0.78' stop-color='%23D7E3E7' stop-opacity='0.28'/%3E%3Cstop offset='1.00' stop-color='%23D7E3E7' stop-opacity='0.00'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 55.00 0.00 C 55.55 13.89 57.05 55.56 58.30 83.33 C 59.54 111.11 61.12 138.89 62.49 166.67 C 63.85 194.44 65.36 222.22 66.47 250.00 C 67.59 277.78 68.63 305.56 69.17 333.33 C 69.71 361.11 69.97 388.89 69.71 416.67 C 69.44 444.44 68.74 472.22 67.59 500.00 C 66.44 527.78 64.76 555.56 62.80 583.33 C 60.85 611.11 58.38 638.89 55.86 666.67 C 53.33 694.44 50.41 722.22 47.66 750.00 C 44.91 777.78 41.95 805.56 39.38 833.33 C 36.82 861.11 34.27 888.89 32.26 916.67 C 30.26 944.44 28.51 972.22 27.36 1000.00 C 26.22 1027.78 25.53 1055.56 25.40 1083.33 C 25.28 1111.11 25.73 1138.89 26.61 1166.67 C 27.50 1194.44 29.00 1222.22 30.73 1250.00 C 32.45 1277.78 34.72 1305.56 36.99 1333.33 C 39.25 1361.11 41.90 1388.89 44.33 1416.67 C 46.75 1444.44 49.34 1472.22 51.54 1500.00 C 53.73 1527.78 55.86 1555.56 57.50 1583.33 C 59.13 1611.11 60.49 1638.89 61.36 1666.67 C 62.24 1694.44 62.68 1722.22 62.73 1750.00 C 62.79 1777.78 62.35 1805.56 61.70 1833.33 C 61.04 1861.11 59.93 1888.89 58.81 1916.67 C 57.70 1944.44 55.64 1986.11 55.00 2000.00' fill='none' stroke='url(%23b)' stroke-width='2.4' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3Cpath d='M 55.00 0.00 C 55.55 13.89 57.05 55.56 58.30 83.33 C 59.54 111.11 61.12 138.89 62.49 166.67 C 63.85 194.44 65.36 222.22 66.47 250.00 C 67.59 277.78 68.63 305.56 69.17 333.33 C 69.71 361.11 69.97 388.89 69.71 416.67 C 69.44 444.44 68.74 472.22 67.59 500.00 C 66.44 527.78 64.76 555.56 62.80 583.33 C 60.85 611.11 58.38 638.89 55.86 666.67 C 53.33 694.44 50.41 722.22 47.66 750.00 C 44.91 777.78 41.95 805.56 39.38 833.33 C 36.82 861.11 34.27 888.89 32.26 916.67 C 30.26 944.44 28.51 972.22 27.36 1000.00 C 26.22 1027.78 25.53 1055.56 25.40 1083.33 C 25.28 1111.11 25.73 1138.89 26.61 1166.67 C 27.50 1194.44 29.00 1222.22 30.73 1250.00 C 32.45 1277.78 34.72 1305.56 36.99 1333.33 C 39.25 1361.11 41.90 1388.89 44.33 1416.67 C 46.75 1444.44 49.34 1472.22 51.54 1500.00 C 53.73 1527.78 55.86 1555.56 57.50 1583.33 C 59.13 1611.11 60.49 1638.89 61.36 1666.67 C 62.24 1694.44 62.68 1722.22 62.73 1750.00 C 62.79 1777.78 62.35 1805.56 61.70 1833.33 C 61.04 1861.11 59.93 1888.89 58.81 1916.67 C 57.70 1944.44 55.64 1986.11 55.00 2000.00' fill='none' stroke='url(%23h)' stroke-width='1' vector-effect='non-scaling-stroke' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+  /* <<< generated */
+
+  /* the room becomes texture, not a picture: there is no column left for it.
+     The dissolve is the same generated field as on desktop — it stretches to
+     whatever the box is, which is exactly what a smooth falloff wants — and
+     only the opacity changes. */
+  .entrance-photo {
+    left: -6%;
+    top: 46%;
+    width: 80%;
+    height: 60%;
+    opacity: .24;
+  }
+}
+@media (max-width: 768px) {
+  .entrance { min-height: calc(100vh - 78px); min-height: calc(100svh - 78px); }
+  .entrance-inner {
+    min-height: calc(100vh - 78px);
+    min-height: calc(100svh - 78px);
+    padding-block: 88px 84px;
+  }
+  /* the staircase stays off here too: `.path:nth-child(n)` would outrank the
+     `.path` reset above and pull the rows back off the spine */
+  .entrance-photo { opacity: .20; }
+  body.is-entrance::before { animation: none; }
+  body.is-entrance::after { opacity: .06; }
+}
+@media (max-width: 560px) {
+  .entrance-paths { --path-gap: var(--space-7); }
+  .entrance-sign { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* entrance.js never adds `.is-live`, so the line and the anchor are already
+     in their finished state; only the ambient drift needs stopping */
+  body.is-entrance::before { animation: none; }
+  /* the second selector is the one that matters: `body.is-leaving …` is more
+     specific than a bare `.white-transition`, so the short duration has to be
+     declared at that specificity or the wash still animates for 1.5s */
+  .white-transition,
+  body.is-leaving .white-transition { transition-duration: 1ms; }
+}
+
+/* ============================================================
+   The threshold — the unicorn, then the field
+
+   The cover does not begin with a photograph and a line. It begins with one
+   drawing: the unicorn, alone on a white page. It holds for a beat, the blue
+   opens out of it, and by the time the drawing has dissolved the cover is
+   what is left. Nobody is shown a loading state; they are shown the drawing,
+   and then the drawing becomes the room.
+
+   The canvas lets pigment spread from the painting's actual alpha edge. CSS
+   retires the white overlay, so a browser that cannot draw the canvas still
+   arrives at the complete cover.
+
+   `html.js-threshold` is set in header.php, synchronously, before the body
+   paints, and only when motion is welcome. It is never set from the foot of
+   the page: a threshold armed after first paint would show the finished cover
+   for a frame and then take it away, which is the one thing an introduction
+   must not do.
+   ============================================================ */
+
+.entrance-threshold {
+  --unicorn-width: min(42vw, 340px);
+  --art-x: 50%;
+  --art-y: 50%;
+  --anchor-x: 50%;
+  --anchor-y: 50%;
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: #f3f6f8;
+}
+
+/* Canvas samples the source painting's alpha and lets pigment travel outward
+   from its actual brushwork. It stays behind the undistorted original. */
+.entrance-ink {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.entrance-drawing {
+  position: absolute;
+  left: var(--art-x);
+  top: var(--art-y);
+  z-index: 2;
+  width: var(--unicorn-width);
+  aspect-ratio: 367 / 505;
+  height: auto;
+  transform: translate(-43.052%, -44.554%);
+  display: none;
+}
+
+/*
+ * The transparent plate sits on the cool paper, without a framed card.
+ */
+.entrance-threshold img {
+  position: absolute;
+  left: var(--art-x);
+  top: var(--art-y);
+  z-index: 2;
+  width: var(--unicorn-width);
+  height: auto;
+  transform: translate(-43.052%, -44.554%);
+}
+
+/* The same painted alpha slowly takes on the cover's deep blue. It overlaps
+   the original so the figure changes colour before its edge dissolves. */
+.entrance-unicorn-dye {
+  position: absolute;
+  left: var(--art-x);
+  top: var(--art-y);
+  z-index: 3;
+  width: var(--unicorn-width);
+  aspect-ratio: 367 / 505;
+  transform: translate(-43.052%, -44.554%);
+  background:
+    radial-gradient(circle at 43% 45%, rgba(231, 181, 106, 0.7), transparent 16%),
+    linear-gradient(180deg, rgba(176, 206, 224, 0.35), #1e3a5f 74%);
+  -webkit-mask: url("art/unicorn.webp") center / 100% 100% no-repeat;
+  mask: url("art/unicorn.webp") center / 100% 100% no-repeat;
+  opacity: 0;
+}
+
+/* The painted spark sits at (158, 225) in the 367 × 505 plate. (152, 227)
+   is an empty pixel beside it, so seating the layers there left the gold
+   point off the red anchor. All three painting layers use that spark. */
+.entrance-star-point {
+  position: absolute;
+  left: var(--art-x);
+  top: var(--art-y);
+  z-index: 4;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(.25);
+  opacity: 0;
+  background: #fff;
+  box-shadow: 0 0 16px 5px rgba(255,255,255,.8);
+}
+
+@media (max-width: 700px) {
+  .entrance-threshold { --unicorn-width: min(62vw, 280px); }
+}
+
+/* Not armed: the threshold is not in the story at all. */
+html:not(.js-threshold) .entrance-threshold { display: none; }
+
+/* The footer script first measures the red point. Until then the white page
+   may paint, but the unicorn cannot flash at the viewport centre. */
+html.js-threshold:not(.threshold-seated) .entrance-threshold img { visibility: hidden; }
+
+html.js-threshold .entrance-threshold {
+  animation: threshold-retire 3.8s ease-in forwards;
+}
+
+html.js-threshold.threshold-seated .entrance-threshold {
+  animation-name: threshold-retire-seated;
+}
+
+html.js-threshold.threshold-seated body.is-entrance .entrance-threshold img {
+  animation: threshold-hold 3.5s var(--ease-standard) both;
+}
+
+html.js-threshold.threshold-seated.painting-ready .entrance-drawing {
+  display: block;
+  animation: threshold-hold 3.5s var(--ease-standard) both;
+}
+
+html.js-threshold.painting-ready .entrance-threshold img {
+  display: none;
+}
+
+html.js-threshold.threshold-seated .entrance-unicorn-dye {
+  animation: threshold-dye 3.5s var(--ease-standard) both;
+}
+
+html.js-threshold.threshold-seated .entrance-star-point {
+  animation: star-to-anchor 3.8s var(--ease-flow) both;
+}
+
+@keyframes star-to-anchor {
+  0%, 28% { opacity: 0; transform: translate(-50%, -50%) scale(.35); background: #e7b56a; box-shadow: 0 0 0 0 transparent; }
+  48% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); background: #e7b56a; box-shadow: 0 0 14px 4px rgba(231, 181, 106, .72); }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1); background: var(--anchor-red); box-shadow: 0 0 16px 4px rgba(197, 139, 142, .5); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); background: var(--anchor-red); box-shadow: 0 0 12px 3px rgba(197, 139, 142, .38); }
+}
+
+@keyframes threshold-retire {
+  0%, 42% { opacity: 1; background-color: #f3f6f8; }
+  70% { opacity: 1; background-color: transparent; }
+  100% { opacity: 0; visibility: hidden; background-color: transparent; }
+}
+
+@keyframes threshold-retire-seated {
+  0%, 42% { opacity: 1; background-color: #f3f6f8; }
+  70% { opacity: 1; background-color: transparent; }
+  100% { opacity: 0; visibility: hidden; background-color: transparent; }
+}
+
+/*
+ * Hold the painted figure while pigment begins to travel; soften its edges
+ * only after the new blue has reached beyond the original brushwork.
+ */
+@keyframes threshold-hold {
+  0%, 40% {
+    opacity: 1;
+    filter: contrast(1.16) saturate(1.24) drop-shadow(0 18px 22px rgba(30, 58, 95, .2));
+  }
+  68% {
+    opacity: .78;
+    filter: contrast(1.04) saturate(1.06) drop-shadow(0 8px 12px rgba(30, 58, 95, .08));
+  }
+  100% { opacity: 0; filter: blur(1.5px); }
+}
+
+@keyframes threshold-dye {
+  0%, 32% { opacity: 0; filter: blur(0); }
+  56% { opacity: .22; filter: blur(0); }
+  76% { opacity: .4; filter: blur(.4px); }
+  100% { opacity: 0; filter: blur(2px); }
+}
+
+/* The cover's own furniture waits until the field has arrived. */
+html.js-threshold body.is-entrance .entrance-lines,
+html.js-threshold body.is-entrance .entrance-photo,
+html.js-threshold body.is-entrance .entrance-inner,
+html.js-threshold body.is-entrance .entrance-sign,
+html.js-threshold .site-header {
+  opacity: 0;
+  animation: threshold-reveal 1.35s var(--ease-standard) 1.5s forwards;
+}
+
+@keyframes threshold-reveal {
+  to { opacity: 1; }
+}
+
+/*
+ * Reduced motion: no threshold at all. The class is never added (header.php
+ * checks first), and this is the belt to that braces — if the class somehow
+ * arrives, the introduction is skipped rather than frozen.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html.js-threshold .entrance-threshold { display: none; }
+  html.js-threshold body.is-entrance .entrance-lines,
+  html.js-threshold body.is-entrance .entrance-photo,
+  html.js-threshold body.is-entrance .entrance-inner,
+  html.js-threshold body.is-entrance .entrance-sign,
+  html.js-threshold .site-header { opacity: 1; animation: none; }
+}

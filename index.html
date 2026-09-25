@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UNIQorn 首页独角兽 · 临时预览</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/entrance.css">
+  <style>
+    :root {
+      --indigo: #1E3A5F;
+      --white: #FFFFFF;
+      --rose: #C58B8E;
+      --rose-soft: #D2A1A0;
+      --anchor-red: var(--rose);
+      --font-display: "Noto Serif SC", "Songti SC", Georgia, serif;
+      --font-body: "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Consolas, monospace;
+      --text-xs: 11px;
+      --text-sm: 12px;
+      --text-base: 15px;
+      --text-md: 16px;
+      --leading-body: 1.72;
+      --tracking-eyebrow: .22em;
+      --space-2: 8px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --gutter: clamp(20px, 5vw, 64px);
+      --container-max: 1200px;
+      --motion-base: 320ms;
+      --motion-slow: 640ms;
+      --ease-standard: cubic-bezier(.2, 0, 0, 1);
+      --ease-flow: cubic-bezier(.33, .02, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #142A48; color: var(--white); }
+    body {
+      font: 400 var(--text-base)/var(--leading-body) var(--font-body);
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    .shell { width: 100%; max-width: calc(var(--container-max) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+    .entrance, .entrance-inner { min-height: 100svh; }
+    .preview-note {
+      position: fixed;
+      z-index: 30;
+      left: 16px;
+      bottom: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(10, 16, 28, .72);
+      color: #d7e3e7;
+      font-size: 12px;
+      letter-spacing: .04em;
+    }
+    .preview-note a {
+      padding: 6px 10px;
+      border: 1px solid rgba(215, 227, 231, .4);
+    }
+  </style>
+  <script>
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.documentElement.classList.add("js-threshold");
+    }
+  </script>
+</head>
+<body class="is-entrance">
+  <main id="main" class="entrance" tabindex="-1">
+    <div class="entrance-threshold" aria-hidden="true">
+      <canvas class="entrance-ink"></canvas>
+      <canvas class="entrance-drawing"></canvas>
+      <img src="assets/art/unicorn.webp" width="367" height="505" alt="" decoding="async" fetchpriority="high">
+      <span class="entrance-unicorn-dye"></span>
+      <span class="entrance-star-point"></span>
+    </div>
+    <figure class="entrance-photo">
+      <img src="assets/img/cover-room.jpg" alt="" width="1200" height="1500">
+    </figure>
+    <svg class="entrance-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="uniqorn-stem" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity="0"/>
+          <stop offset=".18" stop-color="#D7E3E7" stop-opacity=".16"/>
+          <stop offset=".62" stop-color="#D7E3E7" stop-opacity=".38"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity=".58"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-fray" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".52"/>
+          <stop offset=".55" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-fray-left" gradientUnits="objectBoundingBox" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".52"/>
+          <stop offset=".55" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-stem" gradientUnits="objectBoundingBox" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity="0"/>
+          <stop offset=".42" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".78" stop-color="#D7E3E7" stop-opacity=".26"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-fray" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".40" stop-color="#D7E3E7" stop-opacity=".24"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="uniqorn-belly-fray-left" gradientUnits="objectBoundingBox" x1="1" y1="0" x2="0" y2="0">
+          <stop offset="0" stop-color="#D7E3E7" stop-opacity=".32"/>
+          <stop offset=".40" stop-color="#D7E3E7" stop-opacity=".24"/>
+          <stop offset="1" stop-color="#D7E3E7" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path class="line line--a line--belly" d="M 43.50 51.50 C 39.4 50.8 36.5 48.3 33.4 44.9 C 30.1 41.2 29.3 35.3 25.7 31.1 C 22.9 27.8 18.4 27.0 15.0 25.0" vector-effect="non-scaling-stroke"></path>
+      <path class="line line--a" d="M 43.50 51.50 C 39.4 50.8 36.5 48.3 33.4 44.9 C 30.1 41.2 29.3 35.3 25.7 31.1 C 22.9 27.8 18.4 27.0 15.0 25.0" vector-effect="non-scaling-stroke"></path>
+      <path class="line line--b line--belly" d="M 43.50 51.50 C 43.64 51.50 44.06 51.49 44.35 51.50 C 44.63 51.51 44.93 51.53 45.22 51.55 C 45.51 51.57 45.81 51.59 46.11 51.60 C 46.40 51.61 46.70 51.62 47.00 51.62 C 47.30 51.61 47.61 51.59 47.91 51.56 C 48.21 51.52 48.51 51.47 48.81 51.40 C 49.11 51.34 49.41 51.25 49.71 51.16 C 50.00 51.07 50.30 50.96 50.59 50.85 C 50.88 50.75 51.18 50.63 51.46 50.52 C 51.75 50.42 52.04 50.31 52.32 50.22 C 52.60 50.14 52.88 50.06 53.15 50.00 C 53.43 49.94 53.70 49.89 53.96 49.87 C 54.23 49.84 54.49 49.83 54.74 49.84 C 55.00 49.85 55.25 49.88 55.49 49.91 C 55.73 49.94 55.96 49.98 56.19 50.02 C 56.42 50.07 56.64 50.12 56.84 50.15 C 57.05 50.19 57.26 50.23 57.45 50.25 C 57.64 50.27 57.82 50.28 57.99 50.27 C 58.16 50.27 58.32 50.25 58.47 50.23 C 58.61 50.20 58.81 50.13 58.88 50.11" vector-effect="non-scaling-stroke"></path>
+      <path class="line line--b" d="M 43.50 51.50 C 43.64 51.50 44.06 51.49 44.35 51.50 C 44.63 51.51 44.93 51.53 45.22 51.55 C 45.51 51.57 45.81 51.59 46.11 51.60 C 46.40 51.61 46.70 51.62 47.00 51.62 C 47.30 51.61 47.61 51.59 47.91 51.56 C 48.21 51.52 48.51 51.47 48.81 51.40 C 49.11 51.34 49.41 51.25 49.71 51.16 C 50.00 51.07 50.30 50.96 50.59 50.85 C 50.88 50.75 51.18 50.63 51.46 50.52 C 51.75 50.42 52.04 50.31 52.32 50.22 C 52.60 50.14 52.88 50.06 53.15 50.00 C 53.43 49.94 53.70 49.89 53.96 49.87 C 54.23 49.84 54.49 49.83 54.74 49.84 C 55.00 49.85 55.25 49.88 55.49 49.91 C 55.73 49.94 55.96 49.98 56.19 50.02 C 56.42 50.07 56.64 50.12 56.84 50.15 C 57.05 50.19 57.26 50.23 57.45 50.25 C 57.64 50.27 57.82 50.28 57.99 50.27 C 58.16 50.27 58.32 50.25 58.47 50.23 C 58.61 50.20 58.81 50.13 58.88 50.11" vector-effect="non-scaling-stroke"></path>
+      <path class="line line--c line--belly" d="M 43.50 51.50 C 43.64 51.56 44.04 51.72 44.35 51.83 C 44.65 51.94 44.97 52.05 45.32 52.15 C 45.66 52.25 46.02 52.33 46.40 52.41 C 46.78 52.48 47.18 52.54 47.59 52.59 C 48.01 52.65 48.44 52.69 48.88 52.74 C 49.32 52.79 49.77 52.84 50.23 52.92 C 50.69 52.99 51.16 53.07 51.63 53.20 C 52.10 53.32 52.58 53.47 53.05 53.65 C 53.53 53.84 54.00 54.07 54.47 54.33 C 54.94 54.59 55.41 54.89 55.87 55.21 C 56.34 55.53 56.79 55.88 57.24 56.24 C 57.69 56.60 58.14 56.99 58.58 57.35 C 59.02 57.72 59.45 58.10 59.88 58.45 C 60.30 58.80 60.72 59.14 61.13 59.46 C 61.55 59.77 61.95 60.07 62.35 60.34 C 62.75 60.61 63.14 60.86 63.52 61.10 C 63.89 61.33 64.26 61.55 64.61 61.78 C 64.96 62.00 65.30 62.21 65.62 62.45 C 65.93 62.68 66.23 62.92 66.49 63.19 C 66.76 63.45 67.09 63.89 67.21 64.03" vector-effect="non-scaling-stroke"></path>
+      <path class="line line--c" d="M 43.50 51.50 C 43.64 51.56 44.04 51.72 44.35 51.83 C 44.65 51.94 44.97 52.05 45.32 52.15 C 45.66 52.25 46.02 52.33 46.40 52.41 C 46.78 52.48 47.18 52.54 47.59 52.59 C 48.01 52.65 48.44 52.69 48.88 52.74 C 49.32 52.79 49.77 52.84 50.23 52.92 C 50.69 52.99 51.16 53.07 51.63 53.20 C 52.10 53.32 52.58 53.47 53.05 53.65 C 53.53 53.84 54.00 54.07 54.47 54.33 C 54.94 54.59 55.41 54.89 55.87 55.21 C 56.34 55.53 56.79 55.88 57.24 56.24 C 57.69 56.60 58.14 56.99 58.58 57.35 C 59.02 57.72 59.45 58.10 59.88 58.45 C 60.30 58.80 60.72 59.14 61.13 59.46 C 61.55 59.77 61.95 60.07 62.35 60.34 C 62.75 60.61 63.14 60.86 63.52 61.10 C 63.89 61.33 64.26 61.55 64.61 61.78 C 64.96 62.00 65.30 62.21 65.62 62.45 C 65.93 62.68 66.23 62.92 66.49 63.19 C 66.76 63.45 67.09 63.89 67.21 64.03" vector-effect="non-scaling-stroke"></path>
+    </svg>
+    <span class="entrance-anchor" aria-hidden="true"></span>
+    <div class="entrance-inner shell">
+      <div class="entrance-head">
+        <p class="entrance-place">吉隆坡 · 线上与线下</p>
+        <h1 class="entrance-title">透过你的情绪，<br>认识你自己</h1>
+        <p class="entrance-lede">塔罗 · 阿卡西记录 · 水晶矿石 · 工作坊</p>
+      </div>
+      <nav class="entrance-paths" aria-label="选择业务空间">
+        <div class="path" data-path="1">
+          <a class="path-link" data-entrance href="#tarot"><span class="path-zh">塔罗 & 阿卡西记录</span><span class="path-en" lang="en">Tarot & Akashic</span></a>
+        </div>
+        <div class="path" data-path="2">
+          <a class="path-link" data-entrance href="#workshops"><span class="path-zh">课程 & 工作坊</span><span class="path-en" lang="en">Courses & Workshops</span></a>
+        </div>
+        <div class="path" data-path="3">
+          <a class="path-link" data-entrance href="#crystals"><span class="path-zh">水晶矿石</span><span class="path-en" lang="en">Crystals</span></a>
+        </div>
+      </nav>
+    </div>
+    <p class="entrance-sign" aria-hidden="true">UNIQorn Soul Wellness</p>
+  </main>
+  <div class="white-transition" aria-hidden="true"></div>
+  <p class="preview-note">临时预览，入口不会进入正式网站。<a href="./">再看一次</a></p>
+  <script src="assets/entrance.js"></script>
+</body>
+</html>
